@@ -203,6 +203,196 @@
   .emoji-fish.eating {
     animation: eating 0.4s ease;
   }
+  
+  /* 打卡栏样式 */
+  .checkin-panel {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(2, 18, 37, 0.95);
+    border: 2px solid #00d4ff;
+    border-radius: 15px;
+    padding: 25px 20px;
+    width: 280px;
+    max-height: 85vh;
+    overflow-y: auto;
+    z-index: 100;
+    box-shadow: 0 0 40px rgba(0, 212, 255, 0.5);
+    font-family: sans-serif;
+  }
+  
+  .checkin-title {
+    color: #00d4ff;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+  }
+  
+  .checkin-item {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+  }
+  
+  .checkin-checkbox {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #00d4ff;
+    border-radius: 6px;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+  }
+  
+  .checkin-checkbox:hover {
+    background: rgba(0, 212, 255, 0.2);
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+  }
+  
+  .checkin-checkbox.checked {
+    background: #00d4ff;
+    color: #021225;
+  }
+  
+  .checkin-checkbox.checked::after {
+    content: '✓';
+    font-weight: bold;
+    font-size: 16px;
+  }
+  
+  .checkin-label {
+    color: #fff;
+    font-size: 14px;
+    flex: 1;
+    user-select: none;
+  }
+  
+  .checkin-item.checked .checkin-label {
+    color: #00d4ff;
+    text-shadow: 0 0 5px rgba(0, 212, 255, 0.5);
+  }
+  
+  .checkin-divider {
+    height: 1px;
+    background: rgba(0, 212, 255, 0.3);
+    margin: 15px 0;
+  }
+  
+  .checkin-feeling {
+    margin-top: 15px;
+  }
+  
+  .checkin-feeling-label {
+    color: #00d4ff;
+    font-size: 12px;
+    margin-bottom: 8px;
+    display: block;
+    text-transform: uppercase;
+  }
+  
+  .checkin-feeling-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #00d4ff;
+    border-radius: 8px;
+    background: rgba(0, 212, 255, 0.1);
+    color: #fff;
+    font-size: 13px;
+    font-family: sans-serif;
+    resize: vertical;
+    min-height: 60px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+  }
+  
+  .checkin-feeling-input:focus {
+    outline: none;
+    background: rgba(0, 212, 255, 0.2);
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.6);
+  }
+  
+  .checkin-feeling-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+  
+  .checkin-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+  }
+  
+  .btn {
+    flex: 1;
+    padding: 10px 12px;
+    border: 2px solid #00d4ff;
+    background: rgba(0, 212, 255, 0.1);
+    color: #00d4ff;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+  }
+  
+  .btn:hover {
+    background: rgba(0, 212, 255, 0.3);
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+  }
+  
+  .btn.primary {
+    background: #00d4ff;
+    color: #021225;
+  }
+  
+  .btn.primary:hover {
+    background: #00ffff;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.8);
+  }
+  
+  .btn:active {
+    transform: scale(0.95);
+  }
+  
+  .notion-status {
+    font-size: 11px;
+    color: #888;
+    text-align: center;
+    margin-top: 10px;
+  }
+  
+  .notion-status.success {
+    color: #00d4ff;
+    text-shadow: 0 0 5px rgba(0, 212, 255, 0.5);
+  }
+  
+  /* 滚动条样式 */
+  .checkin-panel::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .checkin-panel::-webkit-scrollbar-track {
+    background: rgba(0, 212, 255, 0.1);
+    border-radius: 10px;
+  }
+  
+  .checkin-panel::-webkit-scrollbar-thumb {
+    background: rgba(0, 212, 255, 0.5);
+    border-radius: 10px;
+  }
+  
+  .checkin-panel::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 212, 255, 0.8);
+  }
 </style>
 </head>
 <body>
@@ -215,10 +405,220 @@
   </div>
   <div class="emoji-fish" id="fish2">🐠</div>
 </div>
+
+<!-- 打卡栏 -->
+<div class="checkin-panel" id="checkinPanel">
+  <div class="checkin-title">Yuka今日</div>
+  <div class="checkin-item" data-item="water">
+    <div class="checkin-checkbox"></div>
+    <span class="checkin-label">喝水了</span>
+  </div>
+  <div class="checkin-item" data-item="meal">
+    <div class="checkin-checkbox"></div>
+    <span class="checkin-label">吃饭了</span>
+  </div>
+  <div class="checkin-item" data-item="sleep">
+    <div class="checkin-checkbox"></div>
+    <span class="checkin-label">睡觉了</span>
+  </div>
+  <div class="checkin-item" data-item="rest">
+    <div class="checkin-checkbox"></div>
+    <span class="checkin-label">主动休息了</span>
+  </div>
+  <div class="checkin-item" data-item="noOvertime">
+    <div class="checkin-checkbox"></div>
+    <span class="checkin-label">没有加班</span>
+  </div>
+  <div class="checkin-divider"></div>
+  <div class="checkin-feeling">
+    <label class="checkin-feeling-label">写一句感受吧～</label>
+    <textarea class="checkin-feeling-input" id="feelingInput" placeholder="记录今天的感受..."></textarea>
+  </div>
+  <div class="checkin-buttons">
+    <button class="btn" id="resetBtn">重置</button>
+    <button class="btn primary" id="submitBtn">提交</button>
+  </div>
+  <div class="notion-status" id="notionStatus"></div>
+</div>
 <script>
 const tank = document.getElementById('tank');
 const fish = document.getElementById('fish');
 const fish2 = document.getElementById('fish2');
+
+// ============ 打卡栏功能 ============
+const checkinItems = document.querySelectorAll('.checkin-item');
+const feelingInput = document.getElementById('feelingInput');
+const submitBtn = document.getElementById('submitBtn');
+const resetBtn = document.getElementById('resetBtn');
+const notionStatus = document.getElementById('notionStatus');
+const notionApiKey = localStorage.getItem('notionApiKey') || '';
+const notionDatabaseId = localStorage.getItem('notionDatabaseId') || '';
+
+// 打卡数据结构
+let checkinData = {
+  water: false,
+  meal: false,
+  sleep: false,
+  rest: false,
+  noOvertime: false,
+  feeling: ''
+};
+
+// 从localStorage加载打卡数据
+function loadCheckinData() {
+  const today = new Date().toDateString();
+  const savedData = localStorage.getItem(`checkin_${today}`);
+  if (savedData) {
+    checkinData = JSON.parse(savedData);
+    updateUI();
+  }
+}
+
+// 保存打卡数据到localStorage
+function saveCheckinData() {
+  const today = new Date().toDateString();
+  localStorage.setItem(`checkin_${today}`, JSON.stringify(checkinData));
+}
+
+// 更新UI显示
+function updateUI() {
+  checkinItems.forEach(item => {
+    const itemKey = item.dataset.item;
+    const checkbox = item.querySelector('.checkin-checkbox');
+    
+    if (checkinData[itemKey]) {
+      item.classList.add('checked');
+      checkbox.classList.add('checked');
+    } else {
+      item.classList.remove('checked');
+      checkbox.classList.remove('checked');
+    }
+  });
+  
+  feelingInput.value = checkinData.feeling;
+}
+
+// 点击打卡项目切换状态
+checkinItems.forEach(item => {
+  item.addEventListener('click', () => {
+    const itemKey = item.dataset.item;
+    checkinData[itemKey] = !checkinData[itemKey];
+    saveCheckinData();
+    updateUI();
+  });
+});
+
+// 感受文本框输入
+feelingInput.addEventListener('input', (e) => {
+  checkinData.feeling = e.target.value;
+  saveCheckinData();
+});
+
+// 重置按钮
+resetBtn.addEventListener('click', () => {
+  if (confirm('确定要重置今天的打卡数据吗？')) {
+    checkinData = {
+      water: false,
+      meal: false,
+      sleep: false,
+      rest: false,
+      noOvertime: false,
+      feeling: ''
+    };
+    saveCheckinData();
+    updateUI();
+    showNotionStatus('已重置', false);
+  }
+});
+
+// 提交打卡到Notion
+async function submitToNotion() {
+  if (!notionApiKey || !notionDatabaseId) {
+    showNotionStatus('⚠️ 未配置Notion API', false);
+    return;
+  }
+  
+  showNotionStatus('上传中...', false);
+  
+  const today = new Date().toLocaleDateString('zh-CN');
+  const checkedItems = [];
+  
+  if (checkinData.water) checkedItems.push('喝水了 ✅');
+  if (checkinData.meal) checkedItems.push('吃饭了 ✅');
+  if (checkinData.sleep) checkedItems.push('睡觉了 ✅');
+  if (checkinData.rest) checkedItems.push('主动休息了 ✅');
+  if (checkinData.noOvertime) checkedItems.push('没有加班 ✅');
+  
+  const content = `${checkedItems.join('；')}\n\n感受：${checkinData.feeling || '无'}`;
+  
+  try {
+    const response = await fetch('https://api.notion.com/v1/pages', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${notionApiKey}`,
+        'Notion-Version': '2022-06-28',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        parent: { database_id: notionDatabaseId },
+        properties: {
+          '日期': {
+            title: [{ text: { content: today } }]
+          },
+          '打卡内容': {
+            rich_text: [{ text: { content: content } }]
+          }
+        }
+      })
+    });
+    
+    if (response.ok) {
+      showNotionStatus('✅ 已同步到Notion', true);
+    } else {
+      const error = await response.json();
+      showNotionStatus('❌ 同步失败', false);
+      console.error('Notion API错误:', error);
+    }
+  } catch (error) {
+    showNotionStatus('❌ 网络错误', false);
+    console.error('错误:', error);
+  }
+}
+
+// 提交按钮
+submitBtn.addEventListener('click', () => {
+  if (!checkinData.feeling.trim()) {
+    alert('请先写一句感受～');
+    feelingInput.focus();
+    return;
+  }
+  submitToNotion();
+});
+
+// 显示Notion状态信息
+function showNotionStatus(message, isSuccess) {
+  notionStatus.textContent = message;
+  notionStatus.classList.toggle('success', isSuccess);
+  
+  if (isSuccess) {
+    setTimeout(() => {
+      notionStatus.textContent = '';
+      notionStatus.classList.remove('success');
+    }, 3000);
+  }
+}
+
+// 设置Notion API的快捷方式 (开发者可以在控制台调用)
+window.setNotionConfig = (apiKey, databaseId) => {
+  localStorage.setItem('notionApiKey', apiKey);
+  localStorage.setItem('notionDatabaseId', databaseId);
+  showNotionStatus('✅ Notion配置已保存', true);
+};
+
+// 初始化打卡数据
+loadCheckinData();
+
+// ============ 原有鱼的功能 ============
 
 // 对话框消息
 const messages = [
