@@ -344,6 +344,11 @@
     text-transform: uppercase;
   }
   
+  .btn.secondary {
+    font-size: 11px;
+    padding: 8px 10px;
+  }
+  
   .btn:hover {
     background: rgba(0, 212, 255, 0.3);
     box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
@@ -393,6 +398,187 @@
   .checkin-panel::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 212, 255, 0.8);
   }
+  
+  /* 历史记录弹窗 */
+  .history-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+  }
+  
+  .history-modal.show {
+    display: flex;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  .history-content {
+    background: rgba(2, 18, 37, 0.98);
+    border: 2px solid #00d4ff;
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 0 50px rgba(0, 212, 255, 0.6);
+    animation: slideUp 0.3s ease;
+  }
+  
+  @keyframes slideUp {
+    from { 
+      transform: translateY(50px);
+      opacity: 0;
+    }
+    to { 
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  .history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+  }
+  
+  .history-title {
+    color: #00d4ff;
+    font-size: 24px;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+  }
+  
+  .history-close {
+    background: none;
+    border: none;
+    color: #00d4ff;
+    font-size: 28px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+  
+  .history-close:hover {
+    transform: rotate(90deg);
+    color: #fff;
+  }
+  
+  .history-record {
+    background: rgba(0, 212, 255, 0.05);
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+  }
+  
+  .history-record:hover {
+    background: rgba(0, 212, 255, 0.1);
+    border-color: rgba(0, 212, 255, 0.5);
+  }
+  
+  .history-date {
+    color: #00d4ff;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .history-items {
+    color: #fff;
+    font-size: 14px;
+    line-height: 1.8;
+    margin-bottom: 8px;
+  }
+  
+  .history-feeling {
+    color: #888;
+    font-size: 13px;
+    font-style: italic;
+    padding-left: 10px;
+    border-left: 2px solid rgba(0, 212, 255, 0.3);
+  }
+  
+  .history-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .history-btn {
+    padding: 6px 12px;
+    border: 1px solid #00d4ff;
+    background: transparent;
+    color: #00d4ff;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .history-btn:hover {
+    background: rgba(0, 212, 255, 0.2);
+  }
+  
+  .history-btn.delete {
+    border-color: #ff4444;
+    color: #ff4444;
+  }
+  
+  .history-btn.delete:hover {
+    background: rgba(255, 68, 68, 0.2);
+  }
+  
+  .history-empty {
+    text-align: center;
+    color: #888;
+    padding: 40px;
+    font-size: 14px;
+  }
+  
+  .history-footer {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0, 212, 255, 0.3);
+  }
+  
+  .history-content::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .history-content::-webkit-scrollbar-track {
+    background: rgba(0, 212, 255, 0.1);
+    border-radius: 10px;
+  }
+  
+  .history-content::-webkit-scrollbar-thumb {
+    background: rgba(0, 212, 255, 0.5);
+    border-radius: 10px;
+  }
+  
+  .history-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 212, 255, 0.8);
+  }
 </style>
 </head>
 <body>
@@ -436,9 +622,25 @@
   </div>
   <div class="checkin-buttons">
     <button class="btn" id="resetBtn">重置</button>
-    <button class="btn primary" id="submitBtn">提交</button>
+    <button class="btn primary" id="submitBtn">保存</button>
   </div>
+  <button class="btn secondary" id="historyBtn" style="width: 100%; margin-top: 10px;">📜 查看历史记录</button>
   <div class="notion-status" id="notionStatus"></div>
+</div>
+
+<!-- 历史记录弹窗 -->
+<div class="history-modal" id="historyModal">
+  <div class="history-content">
+    <div class="history-header">
+      <div class="history-title">📜 打卡历史</div>
+      <button class="history-close" id="historyClose">×</button>
+    </div>
+    <div id="historyList"></div>
+    <div class="history-footer">
+      <button class="btn" id="exportAllBtn">导出全部</button>
+      <button class="btn" id="clearAllBtn">清空历史</button>
+    </div>
+  </div>
 </div>
 <script>
 const tank = document.getElementById('tank');
@@ -451,8 +653,6 @@ const feelingInput = document.getElementById('feelingInput');
 const submitBtn = document.getElementById('submitBtn');
 const resetBtn = document.getElementById('resetBtn');
 const notionStatus = document.getElementById('notionStatus');
-const notionApiKey = localStorage.getItem('notionApiKey') || '';
-const notionDatabaseId = localStorage.getItem('notionDatabaseId') || '';
 
 // 打卡数据结构
 let checkinData = {
@@ -533,6 +733,10 @@ resetBtn.addEventListener('click', () => {
 
 // 提交打卡到Notion
 async function submitToNotion() {
+  // 实时读取配置
+  const notionApiKey = localStorage.getItem('notionApiKey') || '';
+  const notionDatabaseId = localStorage.getItem('notionDatabaseId') || '';
+  
   if (!notionApiKey || !notionDatabaseId) {
     showNotionStatus('⚠️ 未配置Notion API', false);
     return;
@@ -592,7 +796,37 @@ submitBtn.addEventListener('click', () => {
     feelingInput.focus();
     return;
   }
-  submitToNotion();
+  
+  // 保存数据
+  saveCheckinData();
+  
+  // 显示成功消息
+  showNotionStatus('✅ 已保存到本地', true);
+  
+  // 显示打卡内容的汇总
+  const today = new Date().toLocaleDateString('zh-CN');
+  const checkedItems = [];
+  
+  if (checkinData.water) checkedItems.push('喝水了 ✅');
+  if (checkinData.meal) checkedItems.push('吃饭了 ✅');
+  if (checkinData.sleep) checkedItems.push('睡觉了 ✅');
+  if (checkinData.rest) checkedItems.push('主动休息了 ✅');
+  if (checkinData.noOvertime) checkedItems.push('没有加班 ✅');
+  
+  const summary = `${today}\n${checkedItems.join('；')}\n\n感受：${checkinData.feeling}`;
+  
+  console.log('=== Yuka的打卡记录 ===');
+  console.log(summary);
+  console.log('=====================');
+  
+  // 提示用户可以复制到Notion
+  setTimeout(() => {
+    if (confirm('打卡记录已保存！\n\n点击"确定"复制打卡内容，可以手动粘贴到Notion中')) {
+      navigator.clipboard.writeText(summary).then(() => {
+        showNotionStatus('📋 已复制到剪贴板', true);
+      });
+    }
+  }, 500);
 });
 
 // 显示Notion状态信息
@@ -607,6 +841,154 @@ function showNotionStatus(message, isSuccess) {
     }, 3000);
   }
 }
+
+// 查看历史记录按钮
+document.getElementById('historyBtn').addEventListener('click', () => {
+  showHistoryModal();
+});
+
+// 显示历史记录弹窗
+function showHistoryModal() {
+  const modal = document.getElementById('historyModal');
+  const listContainer = document.getElementById('historyList');
+  
+  const allRecords = [];
+  
+  // 获取所有打卡记录
+  Object.keys(localStorage).forEach(key => {
+    if (key.startsWith('checkin_')) {
+      const date = key.replace('checkin_', '');
+      const data = JSON.parse(localStorage.getItem(key));
+      allRecords.push({ date, data, key });
+    }
+  });
+  
+  if (allRecords.length === 0) {
+    listContainer.innerHTML = '<div class="history-empty">还没有打卡记录哦～<br>开始你的第一次打卡吧！</div>';
+  } else {
+    // 按日期排序（最新的在前）
+    allRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    listContainer.innerHTML = allRecords.map(record => {
+      const checkedItems = [];
+      if (record.data.water) checkedItems.push('喝水了 ✅');
+      if (record.data.meal) checkedItems.push('吃饭了 ✅');
+      if (record.data.sleep) checkedItems.push('睡觉了 ✅');
+      if (record.data.rest) checkedItems.push('主动休息了 ✅');
+      if (record.data.noOvertime) checkedItems.push('没有加班 ✅');
+      
+      return `
+        <div class="history-record">
+          <div class="history-date">📅 ${record.date}</div>
+          <div class="history-items">${checkedItems.join(' · ')}</div>
+          <div class="history-feeling">💭 ${record.data.feeling || '无'}</div>
+          <div class="history-actions">
+            <button class="history-btn" onclick="copyRecord('${record.key}')">复制</button>
+            <button class="history-btn delete" onclick="deleteRecord('${record.key}')">删除</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+  
+  modal.classList.add('show');
+}
+
+// 关闭历史记录弹窗
+document.getElementById('historyClose').addEventListener('click', () => {
+  document.getElementById('historyModal').classList.remove('show');
+});
+
+// 点击背景关闭弹窗
+document.getElementById('historyModal').addEventListener('click', (e) => {
+  if (e.target.id === 'historyModal') {
+    document.getElementById('historyModal').classList.remove('show');
+  }
+});
+
+// 复制单条记录
+window.copyRecord = (key) => {
+  const date = key.replace('checkin_', '');
+  const data = JSON.parse(localStorage.getItem(key));
+  
+  const checkedItems = [];
+  if (data.water) checkedItems.push('喝水了 ✅');
+  if (data.meal) checkedItems.push('吃饭了 ✅');
+  if (data.sleep) checkedItems.push('睡觉了 ✅');
+  if (data.rest) checkedItems.push('主动休息了 ✅');
+  if (data.noOvertime) checkedItems.push('没有加班 ✅');
+  
+  const text = `📅 ${date}\n${checkedItems.join('；')}\n💭 感受：${data.feeling || '无'}`;
+  
+  navigator.clipboard.writeText(text).then(() => {
+    showNotionStatus('📋 已复制', true);
+  });
+};
+
+// 删除单条记录
+window.deleteRecord = (key) => {
+  const date = key.replace('checkin_', '');
+  if (confirm(`确定要删除 ${date} 的打卡记录吗？`)) {
+    localStorage.removeItem(key);
+    showHistoryModal(); // 刷新列表
+    showNotionStatus('🗑️ 已删除', true);
+  }
+};
+
+// 导出全部记录
+document.getElementById('exportAllBtn').addEventListener('click', () => {
+  const allRecords = [];
+  
+  Object.keys(localStorage).forEach(key => {
+    if (key.startsWith('checkin_')) {
+      const date = key.replace('checkin_', '');
+      const data = JSON.parse(localStorage.getItem(key));
+      
+      const checkedItems = [];
+      if (data.water) checkedItems.push('喝水了 ✅');
+      if (data.meal) checkedItems.push('吃饭了 ✅');
+      if (data.sleep) checkedItems.push('睡觉了 ✅');
+      if (data.rest) checkedItems.push('主动休息了 ✅');
+      if (data.noOvertime) checkedItems.push('没有加班 ✅');
+      
+      allRecords.push({
+        date: date,
+        items: checkedItems.join('；'),
+        feeling: data.feeling || '无'
+      });
+    }
+  });
+  
+  if (allRecords.length === 0) {
+    alert('还没有打卡记录哦～');
+    return;
+  }
+  
+  allRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
+  
+  let historyText = '=== Yuka的打卡历史 ===\n\n';
+  allRecords.forEach(record => {
+    historyText += `📅 ${record.date}\n${record.items}\n💭 感受：${record.feeling}\n\n`;
+  });
+  historyText += `总共 ${allRecords.length} 天打卡记录`;
+  
+  navigator.clipboard.writeText(historyText).then(() => {
+    showNotionStatus('📋 全部记录已复制', true);
+  });
+});
+
+// 清空所有历史
+document.getElementById('clearAllBtn').addEventListener('click', () => {
+  if (confirm('⚠️ 确定要清空所有打卡历史吗？\n此操作不可恢复！')) {
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith('checkin_')) {
+        localStorage.removeItem(key);
+      }
+    });
+    showHistoryModal(); // 刷新列表
+    showNotionStatus('🗑️ 已清空历史', true);
+  }
+});
 
 // 设置Notion API的快捷方式 (开发者可以在控制台调用)
 window.setNotionConfig = (apiKey, databaseId) => {
