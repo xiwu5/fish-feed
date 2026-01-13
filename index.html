@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<title>Fish Feed</title>
+<style>
+  :root { --water:#0b2240; --fish:#ffd700; --food:#ffa559; }
+  body { margin:0; background:radial-gradient(circle at 30% 20%, #113, #021225); overflow:hidden; }
+  #tank { position:relative; width:100vw; height:100vh; }
+  .fish {
+    position:absolute; 
+    width:70px; 
+    height:35px; 
+    background:linear-gradient(90deg, 
+      #ffd700 0%, 
+      #ffed4e 40%, 
+      #ffc107 70%,
+      #ffb347 100%
+    );
+    border-radius:35px 20px 15px 35px;
+    top:50%; 
+    left:20%;
+    box-shadow:
+      0 0 25px rgba(255, 215, 0, 0.5),
+      inset -8px 0 15px rgba(255, 180, 70, 0.3),
+      inset 5px 3px 8px rgba(255, 255, 255, 0.3);
+    transition:transform .4s ease, top 1s ease, left 1s ease;
+  }
+  
+  /* 孔雀鱼的华丽大尾巴 */
+  .fish:after { 
+    content:""; 
+    position:absolute; 
+    right:-85px; 
+    top:-35px; 
+    width:100px; 
+    height:105px;
+    background:
+      radial-gradient(ellipse at 15% 50%, 
+        rgba(255, 215, 0, 0.9) 0%,
+        rgba(255, 180, 70, 0.85) 25%,
+        rgba(255, 140, 50, 0.8) 50%,
+        rgba(255, 100, 30, 0.7) 75%,
+        rgba(255, 70, 20, 0.6) 100%
+      );
+    border-radius:50% 70% 60% 50%;
+    clip-path:polygon(0 50%, 15% 5%, 50% 0%, 85% 5%, 100% 20%, 100% 80%, 85% 95%, 50% 100%, 15% 95%);
+    box-shadow:
+      0 0 20px rgba(255, 140, 50, 0.6),
+      inset -10px 0 20px rgba(255, 70, 20, 0.4),
+      inset 0 -10px 15px rgba(255, 100, 30, 0.3);
+    opacity:0.95;
+  }
+  
+  /* 背鳍 */
+  .fish .dorsal-fin {
+    position:absolute;
+    top:-12px;
+    left:20px;
+    width:25px;
+    height:18px;
+    background:linear-gradient(135deg, 
+      rgba(255, 215, 0, 0.8) 0%,
+      rgba(255, 180, 70, 0.7) 50%,
+      rgba(255, 140, 50, 0.6) 100%
+    );
+    border-radius:50% 50% 0 0;
+    clip-path:polygon(10% 100%, 0% 20%, 50% 0%, 100% 20%, 90% 100%);
+    box-shadow:0 0 8px rgba(255, 180, 70, 0.5);
+  }
+  
+  /* 腹鳍 */
+  .fish .ventral-fin {
+    position:absolute;
+    bottom:-8px;
+    left:25px;
+    width:15px;
+    height:12px;
+    background:linear-gradient(180deg, 
+      rgba(255, 215, 0, 0.7) 0%,
+      rgba(255, 180, 70, 0.6) 100%
+    );
+    border-radius:0 0 50% 50%;
+    box-shadow:0 0 5px rgba(255, 180, 70, 0.4);
+  }
+  
+  .eye { 
+    position:absolute; 
+    right:18px; 
+    top:13px; 
+    width:7px; 
+    height:7px; 
+    background:radial-gradient(circle at 30% 30%, #fff 0%, #000 20%, #000 100%);
+    border-radius:50%; 
+    box-shadow:
+      0 0 0 2px rgba(255,255,255,.95),
+      0 0 8px rgba(255,215,0,0.6),
+      inset -1px -1px 2px rgba(0,0,0,0.3);
+  }
+  
+  /* 身体斑点纹理 */
+  .fish:before {
+    content:"";
+    position:absolute;
+    top:8px;
+    left:15px;
+    width:100%;
+    height:100%;
+    background:
+      radial-gradient(circle at 25% 40%, rgba(255,140,50,0.3) 0%, transparent 25%),
+      radial-gradient(circle at 45% 60%, rgba(255,100,30,0.25) 0%, transparent 20%),
+      radial-gradient(circle at 35% 25%, rgba(255,180,70,0.4) 0%, transparent 15%);
+    border-radius:35px 20px 15px 35px;
+    pointer-events:none;
+  }
+  .bubble {
+    position:absolute; width:10px; height:10px; border:2px solid #9ddfff; border-radius:50%;
+    opacity:0; animation:bubble 4s linear infinite;
+  }
+  @keyframes bubble { 0%{transform:translateY(0) scale(.8); opacity:.3;} 100%{transform:translateY(-200px) scale(1.2); opacity:0;} }
+  .food { position:absolute; width:12px; height:12px; border-radius:50%; background:var(--food);
+    box-shadow:0 2px 6px rgba(0,0,0,.4); animation:fall 3s ease forwards; }
+  @keyframes fall { from{transform:translateY(-20px);} to{transform:translateY(400px);} }
+  #hint { position:absolute; left:50%; top:20px; transform:translateX(-50%); color:#fff; font-family:sans-serif; opacity:.8; }
+  
+  .fish.eating {
+    animation: eating 0.4s ease;
+  }
+  
+  @keyframes eating {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(0.8); }
+  }
+  
+  .food.eaten {
+    animation: foodEaten 0.3s ease forwards;
+  }
+  
+  @keyframes foodEaten {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(0.2);
+      opacity: 0;
+    }
+  }
+  
+  /* 对话框样式 */
+  .toast {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(2, 18, 37, 0.98);
+    padding: 40px 60px;
+    border-radius: 15px;
+    border: 3px solid #00d4ff;
+    color: #fff;
+    z-index: 1000;
+    box-shadow: 0 0 50px rgba(0, 212, 255, 0.6);
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    animation: toastIn 0.4s ease;
+  }
+  
+  @keyframes toastIn {
+    0% {
+      transform: translate(-50%, -50%) scale(0.5);
+      opacity: 0;
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes toastOut {
+    0% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(0.5);
+      opacity: 0;
+    }
+  }
+  
+  .toast.hide {
+    animation: toastOut 0.4s ease forwards;
+  }
+  
+  /* emoji鱼样式 */
+  .emoji-fish {
+    position: absolute;
+    font-size: 50px;
+    transition: transform 0.4s ease, top 1s ease, left 1s ease;
+    z-index: 10;
+  }
+  
+  .emoji-fish.eating {
+    animation: eating 0.4s ease;
+  }
+</style>
+</head>
+<body>
+<div id="tank">
+  <div id="hint">🐟：想吃饭噜～</div>
+  <div class="fish" id="fish">
+    <div class="eye"></div>
+    <div class="dorsal-fin"></div>
+    <div class="ventral-fin"></div>
+  </div>
+  <div class="emoji-fish" id="fish2">🐠</div>
+</div>
+<script>
+const tank = document.getElementById('tank');
+const fish = document.getElementById('fish');
+const fish2 = document.getElementById('fish2');
+
+// 对话框消息
+const messages = [
+  'yuka的小鱼今天很棒～',
+  '小鱼吃饭饭～Yuka也要吃饭饭哦～',
+  '吃饱啦～Yuka也要吃饱饱哦～',
+  'Yuka对我真好～谢谢你～',
+    '我最喜欢Yuka了～',
+    'Yuka是世界上最棒的人！',
+    'Yuka，你真可爱～',
+    'Yuka，爱你哦～',
+    'Yuka，今天也要开心哦～',
+    'Yuka，你是我的小太阳～',
+    'Yuka，谢谢你陪我玩～',
+    'Yuka, 我也想你～',
+    'Yuka，你是最棒嘟！'
+];
+
+// 第一条鱼的位置
+let fishX = window.innerWidth * 0.2;
+let fishY = window.innerHeight * 0.5;
+let targetX = fishX;
+let targetY = fishY;
+let facing = 1;
+
+// 第二条鱼的位置
+let fish2X = window.innerWidth * 0.6;
+let fish2Y = window.innerHeight * 0.3;
+let target2X = fish2X;
+let target2Y = fish2Y;
+let facing2 = 1;
+
+function spawnBubble() {
+  const b = document.createElement('div');
+  b.className = 'bubble';
+  b.style.left = Math.random()*window.innerWidth + 'px';
+  b.style.top  = (window.innerHeight-40) + 'px';
+  tank.appendChild(b);
+  setTimeout(()=>b.remove(), 4000);
+}
+setInterval(spawnBubble, 800);
+
+// 更新鱼的位置
+function updateFish() {
+  // 第一条鱼
+  fishX += (targetX - fishX) * 0.05;
+  fishY += (targetY - fishY) * 0.05;
+  
+  fish.style.left = fishX + 'px';
+  fish.style.top = fishY + 'px';
+  fish.style.transform = `scaleX(${facing})`;
+  
+  // 第二条鱼
+  fish2X += (target2X - fish2X) * 0.04;
+  fish2Y += (target2Y - fish2Y) * 0.04;
+  
+  fish2.style.left = fish2X + 'px';
+  fish2.style.top = fish2Y + 'px';
+  fish2.style.transform = `scaleX(${facing2})`;
+  
+  requestAnimationFrame(updateFish);
+}
+
+// 随机移动第一条鱼
+function randomMove() {
+  targetX = Math.random() * (window.innerWidth - 150);
+  targetY = Math.random() * (window.innerHeight - 100);
+  facing = targetX > fishX ? 1 : -1;
+}
+
+// 随机移动第二条鱼
+function randomMove2() {
+  target2X = Math.random() * (window.innerWidth - 100);
+  target2Y = Math.random() * (window.innerHeight - 80);
+  facing2 = target2X > fish2X ? 1 : -1;
+}
+
+// 每3-5秒随机移动一次
+setInterval(randomMove, Math.random() * 2000 + 3000);
+setInterval(randomMove2, Math.random() * 2000 + 2500);
+
+// 启动动画循环
+updateFish();
+
+// 碰撞检测
+function checkCollision(fish, food) {
+  const fishRect = fish.getBoundingClientRect();
+  const foodRect = food.getBoundingClientRect();
+  
+  const dx = (fishRect.left + fishRect.width / 2) - (foodRect.left + foodRect.width / 2);
+  const dy = (fishRect.top + fishRect.height / 2) - (foodRect.top + foodRect.height / 2);
+  const distance = Math.sqrt(dx * dx + dy * dy);
+  
+  return distance < 50;
+}
+
+// 显示对话框 - 随机选择消息
+function showToast() {
+  const randomIndex = Math.floor(Math.random() * messages.length);
+  const message = messages[randomIndex];
+  
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.classList.add('hide');
+    setTimeout(() => toast.remove(), 400);
+  }, 1500);
+}
+
+tank.addEventListener('click', e => {
+  const food = document.createElement('div');
+  food.className = 'food';
+  food.style.left = (e.clientX-6)+'px';
+  food.style.top  = (e.clientY-6)+'px';
+  tank.appendChild(food);
+
+  // 计算哪条鱼离食物更近
+  const dist1 = Math.sqrt(Math.pow(fishX - e.clientX, 2) + Math.pow(fishY - e.clientY, 2));
+  const dist2 = Math.sqrt(Math.pow(fish2X - e.clientX, 2) + Math.pow(fish2Y - e.clientY, 2));
+  
+  // 让更近的鱼游向食物
+  if (dist1 < dist2) {
+    targetX = e.clientX - 40;
+    targetY = e.clientY - 20;
+    facing = targetX > fishX ? 1 : -1;
+  } else {
+    target2X = e.clientX - 25;
+    target2Y = e.clientY - 25;
+    facing2 = target2X > fish2X ? 1 : -1;
+  }
+  
+  const startTime = Date.now();
+  let eaten = false;
+  
+  // 碰撞检测循环 - 检测两条鱼
+  const collisionCheck = setInterval(() => {
+    if (!food.parentElement || eaten) {
+      clearInterval(collisionCheck);
+      return;
+    }
+    
+    // 检查第一条鱼
+    if (!eaten && checkCollision(fish, food)) {
+      eaten = true;
+      clearInterval(collisionCheck);
+      
+      food.classList.add('eaten');
+      fish.classList.add('eating');
+      
+      showToast();
+      
+      setTimeout(() => {
+        food.remove();
+        fish.classList.remove('eating');
+      }, 300);
+    }
+    
+    // 检查第二条鱼
+    if (!eaten && checkCollision(fish2, food)) {
+      eaten = true;
+      clearInterval(collisionCheck);
+      
+      food.classList.add('eaten');
+      fish2.classList.add('eating');
+      
+      showToast();
+      
+      setTimeout(() => {
+        food.remove();
+        fish2.classList.remove('eating');
+      }, 300);
+    }
+    
+    // 3秒后自动移除未被吃掉的食物
+    if (Date.now() - startTime > 3000) {
+      clearInterval(collisionCheck);
+      if (food.parentElement) food.remove();
+    }
+  }, 50);
+});
+</script>
+</body>
+</html>
